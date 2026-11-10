@@ -1,0 +1,137 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "MK SHOPS product item across Gadgets, Three-Piece Collection, Fashion, and Lifestyle",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Product title" },
+        "description": { "type": "string", "description": "Product details" },
+        "category": { "type": "string", "description": "Category name" },
+        "price": { "type": "number", "description": "Regular price in BDT" },
+        "discountPrice": { "type": "number", "description": "Discounted price in BDT" },
+        "stock": { "type": "integer", "description": "Stock count" },
+        "imageUrl": { "type": "string", "description": "Image URL or asset identifier" },
+        "sku": { "type": "string", "description": "Product SKU" },
+        "status": { "type": "string", "description": "Status such as in_stock, low_stock" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp via serverTimestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update timestamp via serverTimestamp" }
+      },
+      "required": ["name", "category", "price", "stock"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Customer or reseller account details",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "description": "User email address" },
+        "displayName": { "type": "string", "description": "Full name" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "address": { "type": "string", "description": "Default delivery address" },
+        "role": { "type": "string", "description": "Role: customer, reseller, or admin" },
+        "resellerStatus": { "type": "string", "description": "none, pending, active, expired" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer purchase order and confirmation voucher",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Buyer user ID" },
+        "voucherNumber": { "type": "string", "description": "Unique order voucher code" },
+        "customerName": { "type": "string", "description": "Customer recipient name" },
+        "customerPhone": { "type": "string", "description": "Customer contact number" },
+        "shippingAddress": { "type": "string", "description": "Full delivery address" },
+        "deliveryArea": { "type": "string", "description": "Inside Dhaka or Outside Dhaka" },
+        "deliveryCharge": { "type": "number", "description": "Delivery fee" },
+        "subtotal": { "type": "number", "description": "Sum of item prices" },
+        "discountAmount": { "type": "number", "description": "Coupon/Voucher discount" },
+        "totalAmount": { "type": "number", "description": "Final payable amount" },
+        "paymentMethod": { "type": "string", "description": "COD, bKash, or Nagad" },
+        "transactionId": { "type": "string", "description": "MFS TrxID if paid via bKash/Nagad" },
+        "paymentStatus": { "type": "string", "description": "Pending or Verified" },
+        "orderStatus": { "type": "string", "description": "New, Confirmed, Processing, Shipped, Delivered, Cancelled" },
+        "riskScore": { "type": "integer", "description": "Fraud risk score 0-100" },
+        "itemCount": { "type": "integer", "description": "Total quantity of items" },
+        "isResellerOrder": { "type": "boolean", "description": "Whether placed by a reseller" },
+        "resellerId": { "type": "string", "description": "Reseller ID if applicable" },
+        "resellerProfit": { "type": "number", "description": "Commission or margin amount" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "voucherNumber", "customerName", "customerPhone", "shippingAddress", "totalAmount", "orderStatus"]
+    },
+    "CartItem": {
+      "title": "CartItem",
+      "description": "Item stored in user shopping cart",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string", "description": "Target product ID" },
+        "productName": { "type": "string", "description": "Product title" },
+        "productImage": { "type": "string", "description": "Image URL or asset" },
+        "price": { "type": "number", "description": "Unit price" },
+        "quantity": { "type": "integer", "description": "Item quantity" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "productName", "price", "quantity"]
+    },
+    "Voucher": {
+      "title": "Voucher",
+      "description": "Discount voucher or free delivery coupon",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string", "description": "Coupon code" },
+        "title": { "type": "string", "description": "Voucher title" },
+        "discountType": { "type": "string", "description": "fixed, percentage, or free_delivery" },
+        "discountValue": { "type": "number", "description": "Discount amount or percentage" },
+        "minOrderAmount": { "type": "number", "description": "Minimum order amount" },
+        "isActive": { "type": "boolean", "description": "Active flag" }
+      },
+      "required": ["code", "discountType", "discountValue"]
+    },
+    "AppConfig": {
+      "title": "AppConfig",
+      "description": "System settings and delivery rates",
+      "type": "object",
+      "properties": {
+        "deliveryChargeInsideDhaka": { "type": "number", "description": "Delivery charge in Dhaka" },
+        "deliveryChargeOutsideDhaka": { "type": "number", "description": "Delivery charge outside Dhaka" },
+        "bkashNumber": { "type": "string", "description": "bKash payment number" },
+        "nagadNumber": { "type": "string", "description": "Nagad payment number" },
+        "whatsappNumber": { "type": "string", "description": "WhatsApp contact number" },
+        "resellerMembershipFee": { "type": "number", "description": "Annual reseller fee" }
+      },
+      "required": ["deliveryChargeInsideDhaka", "deliveryChargeOutsideDhaka"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Public catalog of products"
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profile with role and contact info"
+    },
+    "/users/{userId}/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Orders created by or assigned to user"
+    },
+    "/users/{userId}/cart/{itemId}": {
+      "schema": { "$ref": "#/entities/CartItem" },
+      "description": "User active cart items"
+    },
+    "/vouchers/{voucherId}": {
+      "schema": { "$ref": "#/entities/Voucher" },
+      "description": "Available discount vouchers and promo codes"
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/AppConfig" },
+      "description": "App settings and rates"
+    }
+  }
+}

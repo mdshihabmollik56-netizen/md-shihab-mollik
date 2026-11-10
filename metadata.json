@@ -1,0 +1,6 @@
+{
+  "name": "MK SHOPS",
+  "description": "Premium Online Shopping for Gadgets, Three-Piece Collection, Fashion & Lifestyle in Bangladesh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

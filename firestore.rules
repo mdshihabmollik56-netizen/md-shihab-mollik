@@ -1,0 +1,133 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidTimestamp(val) {
+      return val is timestamp && val <= request.time;
+    }
+
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+             data.category is string && data.category.size() > 0 &&
+             data.price is number && data.price >= 0 &&
+             data.stock is int && data.stock >= 0 &&
+             (!('description' in data) || data.description is string) &&
+             (!('discountPrice' in data) || (data.discountPrice is number && data.discountPrice >= 0)) &&
+             (!('imageUrl' in data) || data.imageUrl is string) &&
+             (!('sku' in data) || data.sku is string) &&
+             (!('status' in data) || data.status is string) &&
+             (!('createdAt' in data) || isValidTimestamp(data.createdAt)) &&
+             (!('updatedAt' in data) || isValidTimestamp(data.updatedAt));
+    }
+
+    function isValidUserProfile(data, userId) {
+      return data.userId == userId &&
+             (!('email' in data) || data.email is string) &&
+             (!('displayName' in data) || data.displayName is string) &&
+             (!('phone' in data) || data.phone is string) &&
+             (!('address' in data) || data.address is string) &&
+             (!('role' in data) || data.role in ['customer', 'reseller', 'admin']) &&
+             (!('resellerStatus' in data) || data.resellerStatus in ['none', 'pending', 'active', 'expired']) &&
+             (!('createdAt' in data) || isValidTimestamp(data.createdAt)) &&
+             (!('updatedAt' in data) || isValidTimestamp(data.updatedAt));
+    }
+
+    function isValidOrder(data, userId) {
+      return data.userId == userId &&
+             data.voucherNumber is string && data.voucherNumber.size() > 0 &&
+             data.customerName is string && data.customerName.size() > 0 &&
+             data.customerPhone is string && data.customerPhone.size() > 0 &&
+             data.shippingAddress is string && data.shippingAddress.size() > 0 &&
+             data.totalAmount is number && data.totalAmount >= 0 &&
+             data.orderStatus in ['New', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] &&
+             (!('deliveryArea' in data) || data.deliveryArea is string) &&
+             (!('deliveryCharge' in data) || data.deliveryCharge is number) &&
+             (!('subtotal' in data) || data.subtotal is number) &&
+             (!('discountAmount' in data) || data.discountAmount is number) &&
+             (!('paymentMethod' in data) || data.paymentMethod in ['COD', 'bKash', 'Nagad']) &&
+             (!('transactionId' in data) || data.transactionId is string) &&
+             (!('paymentStatus' in data) || data.paymentStatus in ['Pending', 'Verified']) &&
+             (!('riskScore' in data) || (data.riskScore is int && data.riskScore >= 0 && data.riskScore <= 100)) &&
+             (!('itemCount' in data) || (data.itemCount is int && data.itemCount >= 0)) &&
+             (!('isResellerOrder' in data) || data.isResellerOrder is bool) &&
+             (!('resellerId' in data) || data.resellerId is string) &&
+             (!('resellerProfit' in data) || data.resellerProfit is number) &&
+             (!('createdAt' in data) || isValidTimestamp(data.createdAt)) &&
+             (!('updatedAt' in data) || isValidTimestamp(data.updatedAt));
+    }
+
+    function isValidCartItem(data) {
+      return data.productId is string && data.productId.size() > 0 &&
+             data.productName is string && data.productName.size() > 0 &&
+             data.price is number && data.price >= 0 &&
+             data.quantity is int && data.quantity > 0 &&
+             (!('productImage' in data) || data.productImage is string) &&
+             (!('createdAt' in data) || isValidTimestamp(data.createdAt));
+    }
+
+    function isValidVoucher(data) {
+      return data.code is string && data.code.size() > 0 &&
+             data.discountType in ['fixed', 'percentage', 'free_delivery'] &&
+             data.discountValue is number && data.discountValue >= 0 &&
+             (!('title' in data) || data.title is string) &&
+             (!('minOrderAmount' in data) || data.minOrderAmount is number) &&
+             (!('isActive' in data) || data.isActive is bool);
+    }
+
+    function isValidAppConfig(data) {
+      return data.deliveryChargeInsideDhaka is number &&
+             data.deliveryChargeOutsideDhaka is number &&
+             (!('bkashNumber' in data) || data.bkashNumber is string) &&
+             (!('nagadNumber' in data) || data.nagadNumber is string) &&
+             (!('whatsappNumber' in data) || data.whatsappNumber is string) &&
+             (!('resellerMembershipFee' in data) || data.resellerMembershipFee is number);
+    }
+
+    // Products catalog
+    match /products/{productId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidProduct(request.resource.data);
+      allow delete: if isAuthenticated();
+    }
+
+    // User profile and subcollections
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidUserProfile(request.resource.data, userId);
+      allow delete: if isOwner(userId);
+
+      match /orders/{orderId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidOrder(request.resource.data, userId);
+        allow delete: if isOwner(userId);
+      }
+
+      match /cart/{itemId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidCartItem(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Vouchers collection
+    match /vouchers/{voucherId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidVoucher(request.resource.data);
+      allow delete: if isAuthenticated();
+    }
+
+    // App settings and config
+    match /settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidAppConfig(request.resource.data);
+    }
+  }
+}
