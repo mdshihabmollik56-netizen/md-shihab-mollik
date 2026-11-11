@@ -89,4 +89,24 @@ class ExampleUnitTest {
         assertEquals(800.0, wholesaleRate, 0.01)
         assertEquals(200.0, resellerProfit, 0.01)
     }
+
+    @Test
+    fun testRoomProductEntityDiscount() {
+        val entity = com.example.data.local.ProductEntity(
+            id = "gadget_001",
+            name = "Alienware Aurora Gaming Rig Desktop",
+            description = "High performance gaming rig",
+            category = "Gadgets",
+            price = 195000.0,
+            discountPrice = 179000.0,
+            stock = 12L,
+            imageUrl = "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600",
+            sku = "MK-PC-001"
+        )
+
+        val discount = entity.price - entity.discountPrice
+        assertEquals(16000.0, discount, 0.01)
+        val discountPercentage = (((entity.price - entity.discountPrice) / entity.price) * 100).toInt()
+        assertEquals(8, discountPercentage)
+    }
 }

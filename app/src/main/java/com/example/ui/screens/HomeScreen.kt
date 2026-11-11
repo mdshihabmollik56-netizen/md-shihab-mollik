@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -401,18 +402,24 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(Color(0xFFF7F8F7)),
-            contentPadding = PaddingValues(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            contentAlignment = Alignment.TopCenter
         ) {
-            // 1. Search Bar with Modern Border (Full Width)
-            item(span = { GridItemSpan(2) }) {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 175.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .widthIn(max = 1200.dp),
+                contentPadding = PaddingValues(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                // 1. Search Bar with Modern Border (Full Width)
+                item(span = { GridItemSpan(maxLineSpan) }) {
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { viewModel.setSearchQuery(it) },
@@ -451,7 +458,7 @@ fun HomeScreen(
             }
 
             // 2. High-Tech Hero Slider (HorizontalPager with Indicator Dots)
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Column {
                     Card(
                         modifier = Modifier
@@ -590,7 +597,7 @@ fun HomeScreen(
             }
 
             // 3. Circular Category Icons Row (eCommax Style)
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Column {
                     Row(
                         modifier = Modifier
@@ -674,7 +681,7 @@ fun HomeScreen(
 
             // 4. "DEALS OF THE DAY" (ডিলস অব দ্য ডে) Countdown Section (eCommax Signature)
             if (dealsProducts.isNotEmpty()) {
-                item(span = { GridItemSpan(2) }) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
@@ -772,7 +779,7 @@ fun HomeScreen(
             }
 
             // 5. Trust Badges Row (eCommax 4-Column Feature Bar)
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Surface(
                     color = Color.White,
                     shape = RoundedCornerShape(12.dp),
@@ -814,7 +821,7 @@ fun HomeScreen(
             }
 
             // 6. Delivery Rate Strip with Copyable Coupon Code
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Surface(
                     color = MkDarkGreen,
                     shape = RoundedCornerShape(10.dp)
@@ -856,7 +863,7 @@ fun HomeScreen(
             }
 
             // 7. Catalog Section Header with Total Items Counter
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -901,7 +908,7 @@ fun HomeScreen(
 
             // 8. Product Grid Items
             if (filteredProducts.isEmpty()) {
-                item(span = { GridItemSpan(2) }) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -945,9 +952,10 @@ fun HomeScreen(
             }
 
             // Bottom Spacing for Floating Buttons & Navigation
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Spacer(modifier = Modifier.height(70.dp))
             }
+        }
         }
     }
 }
